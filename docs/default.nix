@@ -127,7 +127,7 @@ in
         ];
       };
 
-      vendorHash = "sha256-W0PJdS9C8Qz9jU5zRmfwBshsCK8BJFIYBFVstpfZEUI=";
+      vendorHash = "sha256-qsmXolxEcYjY2jwIlPRqir5gE8TeVknPGIGF4g89x54=";
 
       buildInputs = with pkgs; [
         asciidoctorWrapped
