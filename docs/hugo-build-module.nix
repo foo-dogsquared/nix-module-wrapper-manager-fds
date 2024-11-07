@@ -29,6 +29,7 @@
 
 {
   name ? "${args'.pname}-${args'.version}",
+  buildInputs ? [ ],
   nativeBuildInputs ? [ ],
   passthru ? { },
 
@@ -210,9 +211,12 @@ let
     // {
       nativeBuildInputs = [
         hugo
-        git
         go
       ] ++ nativeBuildInputs;
+
+      buildInputs = [
+        git
+      ] ++ buildInputs;
 
       inherit (go) GOOS GOARCH;
 

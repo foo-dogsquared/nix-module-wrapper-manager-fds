@@ -92,12 +92,7 @@ in
         inherit pkgs;
         modules = [
           (
-            {
-              config,
-              lib,
-              pkgs,
-              ...
-            }:
+            { lib, ... }:
             {
               wrappers.asciidoctor = {
                 arg0 = lib.getExe' gems "asciidoctor";
@@ -129,9 +124,8 @@ in
 
       vendorHash = "sha256-qsmXolxEcYjY2jwIlPRqir5gE8TeVknPGIGF4g89x54=";
 
-      buildInputs = with pkgs; [
+      nativeBuildInputs = [
         asciidoctorWrapped
-        git
         gems
         gems.wrappedRuby
       ];
