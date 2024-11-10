@@ -6,6 +6,10 @@ docs-serve:
 docs-build:
 	hugo -s docs/website
 
+.PHONY: build
+build:
+	{ command -v nix >/dev/null && nix build -f docs/ website; } || { nix-build docs/ -A website; }
+
 .PHONY: check
 check:
 	{ command -v nix > /dev/null && nix flake check; } || { nix-build tests -A configs -A lib; }
