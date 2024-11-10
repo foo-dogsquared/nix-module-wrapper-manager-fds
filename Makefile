@@ -6,6 +6,10 @@ docs-serve:
 docs-build:
 	hugo -s docs/website
 
+.PHONY: check
+check:
+	{ command -v nix > /dev/null && nix flake check; } || { nix-build tests -A configs -A lib; }
+
 # Ideally, this should be done only in the remote CI environment with a certain
 # update cadence/rhythm.
 .PHONY: update

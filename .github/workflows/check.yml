@@ -1,0 +1,15 @@
+name: Check test suite
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+jobs:
+  check:
+    name: Check outputs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DeterminateSystems/nix-installer-action@v15
+      - run: make check
