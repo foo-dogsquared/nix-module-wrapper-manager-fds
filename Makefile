@@ -1,3 +1,5 @@
+BASEURL := "https://foo-dogsquared.github.io/nix-module-wrapper-manager-fds"
+
 .PHONY: docs-serve
 docs-serve:
 	hugo -s docs/website serve
@@ -8,7 +10,7 @@ docs-build:
 
 .PHONY: build
 build:
-	{ command -v nix >/dev/null && nix build -f docs/ website; } || { nix-build docs/ -A website; }
+	{ command -v nix >/dev/null && nix build -f docs/ --argstr baseUrl $(BASEURL) website; } || { nix-build docs/ -A website --argstr baseUrl $(BASEURL); }
 
 .PHONY: check
 check:

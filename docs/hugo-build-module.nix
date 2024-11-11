@@ -279,7 +279,7 @@ let
       buildPhase =
         args.buildPhase or ''
           runHook preBuild
-          hugo "''${buildFlags[@]}" --destination public
+          hugo ''${buildFlags[@]} --destination public
           runHook postBuild
         '';
 

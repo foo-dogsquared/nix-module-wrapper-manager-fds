@@ -106,6 +106,8 @@ in
         ];
       };
     in
+    { baseUrl ? "https://foo-dogsquared.github.io/nix-module-wrapper-manager-fds" }:
+
     buildHugoSite {
       pname = "wrapper-manager-docs";
       version = "2024-07-13";
@@ -123,6 +125,8 @@ in
       };
 
       vendorHash = "sha256-qsmXolxEcYjY2jwIlPRqir5gE8TeVknPGIGF4g89x54=";
+
+      buildFlags = [ "--baseURL" baseUrl ];
 
       nativeBuildInputs = [
         asciidoctorWrapped
