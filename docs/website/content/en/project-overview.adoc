@@ -96,6 +96,14 @@ Unlike the other methods, the flake output is the user entrypoint so no need to 
 }
 ----
 
+
+
+[#getting-started]
+== Getting started
+
+Now that you have wrapper-manager-fds on the go, let's have a breakdown of what it is, exactly.
+The project itself is made of different parts which you can use for different purposes.
+
 [#user-entrypoint]
 === User entrypoint
 
@@ -129,14 +137,6 @@ wrapperManagerLib.env.build { }
 
 * `overlays` is a set of nixpkgs overlays to be applied by the user.
 So far, there's only one overlay called `default` containing the wrapper-manager library set.
-
-
-
-[#getting-started]
-== Getting started
-
-Now that you have wrapper-manager-fds on the go, let's have a breakdown of what it is, exactly.
-The project itself is made of different parts which you can use for different purposes.
 
 [#the-module-environment]
 === The module environment

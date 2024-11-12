@@ -45,8 +45,15 @@ in
     specialArgs = { hello = "WORLD"; };
   }
 ----
-
 --
+
+* There is also `wrapperManagerLib.env.eval` which is just evaluating a wrapper-manager package and nothing else. footnote:[In fact, `wrapperManagerLib.env.build` is just a wrapper around this function getting the toplevel package.]
+Useful for creating your own integrations in other module environments.
+It should accept the same arguments as the build function.
+
+* You can take advantage of the integration modules for home-manager and NixOS and it automatically adds them into their respective package list (i.e., `home.packages` and `environment.systemPackages`).
+They are mainly configured through `wrapper-manager.packages` which is an attribute set representing a set of package.
+For more details, you can see <<with-nixos-and-home-manager>>.
 
 
 [#using-wrapper-manager]
@@ -416,7 +423,7 @@ It is available to be viewed as `wrapper-manager.nix(5)` (i.e., `man 5 wrapper-m
 * An HTML manual can be brought over by setting `wrapper-manager.documentation.html.enable` to `true`.
 The HTML manual package has a desktop entry file titled `wrapper-manager manual` in the common application launchers (e.g., rofi, GNOME Shell app launcher).
 
-You can also set additional modules to be included with `wrapper-manager.documentation.extraModules` in case you have custom wrapper-manager modules that you want to be nicely integrated.
+You can also set additional modules to be included with `wrapper-manager.documentation.extraModules` in case you have custom wrapper-manager modules.
 
 
 [#differences-from-original-wrapper-manager]
