@@ -7,9 +7,10 @@ in
 
 let
   docs = import ./docs { inherit pkgs; };
+  website = docs.website { };
 in
 pkgs.mkShell {
-  inputsFrom = [ docs.website ];
+  inputsFrom = [ website ];
 
   packages = with pkgs; [
     npins
