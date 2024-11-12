@@ -19,9 +19,9 @@ reproducible = true
 stem = "latexmath"
 env-hugo = true
 
-avatarsdir = "/wrapper-manager-fds/icons/avatars"
+avatarsdir = "/nix-module-wrapper-manager-fds/icons/avatars"
 avatarstype = "svg"
 
 icons = "image"
-iconsdir = "/wrapper-manager-fds/icons/asciidoctor"
+iconsdir = "/nix-module-wrapper-manager-fds/icons/asciidoctor"
 icontype = "svg"
