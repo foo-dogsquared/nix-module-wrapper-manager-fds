@@ -1,0 +1,26 @@
+name: Update Nix dependencies
+on:
+  workflow_dispatch:
+  schedule:
+    # This is done on a biweekly basis.
+    - cron: '0 0 1,15 * *'
+
+jobs:
+  update-nix-deps:
+    permissions:
+      contents: write
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DeterminateSystems/nix-installer-action@v15
+      - run: nix develop --command make update
+      - id: datetime
+        run: |
+          echo "DATETIME=$(date '+%F')" >> "$GITHUB_OUTPUT"
+      - name: Create pull request
+        uses: peter-evans/create-pull-request
+        with:
+          title: "ci: update lockfile as of ${{ steps.update-nix-deps.datetime.outputs.DATETIME }}"
+          body: ""
+          labels: npins-update
