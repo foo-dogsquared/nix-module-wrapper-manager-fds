@@ -19,7 +19,7 @@ jobs:
         run: |
           echo "DATETIME=$(date '+%F')" >> "$GITHUB_OUTPUT"
       - name: Create pull request
-        uses: peter-evans/create-pull-request
+        uses: peter-evans/create-pull-request@v7
         with:
           title: "ci: update lockfile as of ${{ steps.update-nix-deps.datetime.outputs.DATETIME }}"
           body: ""
