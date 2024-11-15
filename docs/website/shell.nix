@@ -7,11 +7,13 @@ in
 
 let
   docs = import ../. { inherit pkgs; };
+  website = docs.website { };
 in
 pkgs.mkShell {
-  inputsFrom = [ docs.website ];
+  inputsFrom = [ website ];
 
   packages = with pkgs; [
+    bundix
     nodePackages.prettier
     vscode-langservers-extracted
   ];
