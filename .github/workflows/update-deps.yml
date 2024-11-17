@@ -21,6 +21,8 @@ jobs:
       - name: Create pull request
         uses: peter-evans/create-pull-request@v7
         with:
-          title: "ci: update lockfile as of ${{ steps.update-nix-deps.datetime.outputs.DATETIME }}"
+          title: "ci: update lockfile as of ${{ steps.datetime.outputs.DATETIME }}"
           body: ""
+          commit_message: |
+            npins: update lockfile as of ${{ steps.datetime.outputs.DATETIME }}
           labels: npins-update
