@@ -22,8 +22,9 @@ jobs:
         uses: peter-evans/create-pull-request@v7
         with:
           title: "ci: update lockfile as of ${{ steps.datetime.outputs.DATETIME }}"
+          delete-branch: true
           branch: update-npins-lockfile
           body: ""
-          commit_message: |
+          commit-message: |
             npins: update lockfile as of ${{ steps.datetime.outputs.DATETIME }}
           labels: npins-update
