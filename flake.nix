@@ -58,7 +58,7 @@
         devPackages = {
           manpage-reference = docs.outputs.manpage;
           html-reference = docs.outputs.html;
-          website = docs.website;
+          website = docs.website { };
         };
 
         checks =

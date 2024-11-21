@@ -110,7 +110,7 @@ in
 
     buildHugoSite {
       pname = "wrapper-manager-docs";
-      version = "2024-07-13";
+      version = "2024-11-21";
 
       src = lib.fileset.toSource {
         root = ./website;
@@ -124,7 +124,7 @@ in
         ];
       };
 
-      vendorHash = "sha256-qsmXolxEcYjY2jwIlPRqir5gE8TeVknPGIGF4g89x54=";
+      vendorHash = "sha256-UDDCYQB/kdYT63vRlRzL6lOePl9F7j3eUIHX/m6rwEs=";
 
       buildFlags = [ "--baseURL" baseUrl ];
 
