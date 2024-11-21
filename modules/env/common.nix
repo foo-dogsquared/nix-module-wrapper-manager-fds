@@ -21,6 +21,17 @@ let
           config._module.args.pkgs = lib.mkDefault pkgs;
         }
       )
+
+      (
+        { lib, ... }: {
+          options.enableInstall = lib.mkOption {
+            type = lib.types.bool;
+            default = cfg.enableInstall;
+            description = "Install the package to the wider-scoped environment.";
+            example = false;
+          };
+        }
+      )
     ] ++ cfg.sharedModules;
   };
 in
@@ -33,6 +44,17 @@ in
   ];
 
   options.wrapper-manager = {
+    enableInstall = lib.mkOption {
+      type = lib.types.bool;
+      description = ''
+        Enable installing the package to the wider-scoped environment list
+        of packages. This is to be set as the default value of
+        {option}`enableInstall` in the wrapper-manager package environment.
+      '';
+      default = true;
+      example = false;
+    };
+
     sharedModules = lib.mkOption {
       type = with lib.types; listOf deferredModule;
       default = [ ];

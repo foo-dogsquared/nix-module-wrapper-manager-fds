@@ -34,7 +34,10 @@ in
 
     (lib.mkIf (cfg.packages != { }) {
       environment.systemPackages =
-        lib.mapAttrsToList (_: wrapper: wrapper.build.toplevel) cfg.packages;
+        let
+          validPackages = lib.filterAttrs (_: wrapper: wrapper.enableInstall) cfg.packages;
+        in
+          lib.mapAttrsToList (_: wrapper: wrapper.build.toplevel) validPackages;
     })
   ];
 }
