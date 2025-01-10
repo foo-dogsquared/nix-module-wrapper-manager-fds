@@ -96,7 +96,7 @@ in
                 "--config" ./config/fastfetch/config
                 "--logo" "Guix"
               ];
-              env.NO_COLOR = 1;
+              env.NO_COLOR.value = 1;
             };
           };
 
