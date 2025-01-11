@@ -46,7 +46,7 @@ let
           opt // {
             declarations = map (decl:
               if lib.hasPrefix src (toString decl) then
-                gitHubDeclaration "foo-dogsquared" "wrapper-manager-fds"
+                gitHubDeclaration "foo-dogsquared" "nix-module-wrapper-manager-fds"
                 (lib.removePrefix "/" (lib.removePrefix src (toString decl)))
               else if decl == "lib/modules.nix" then
                 gitHubDeclaration "NixOS" "nixpkgs" decl
