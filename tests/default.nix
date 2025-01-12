@@ -10,10 +10,13 @@ let
   inherit (pkgs) lib;
 in
 {
-  configs = let
-    configs' = import ./configs { inherit pkgs; };
-    updateTestName = configName: package: lib.mapAttrs' (n: v: lib.nameValuePair "${configName}-${n}" v) package.wrapperManagerTests;
-  in
+  configs =
+    let
+      configs' = import ./configs { inherit pkgs; };
+      updateTestName =
+        configName: package:
+        lib.mapAttrs' (n: v: lib.nameValuePair "${configName}-${n}" v) package.wrapperManagerTests;
+    in
     lib.concatMapAttrs updateTestName configs';
 
   lib =

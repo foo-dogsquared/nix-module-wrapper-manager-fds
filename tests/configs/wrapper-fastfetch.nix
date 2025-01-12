@@ -19,9 +19,12 @@
     xdg.desktopEntry.enable = true;
   };
 
-  environment.pathAdd = wrapperManagerLib.getBin (with pkgs; [
-    hello
-  ]);
+  environment.pathAdd = wrapperManagerLib.getBin (
+    with pkgs;
+    [
+      hello
+    ]
+  );
 
   build.extraPassthru.wrapperManagerTests = {
     actuallyBuilt =

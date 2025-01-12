@@ -7,7 +7,10 @@
 
 let
   cfg = config.wrapper-manager;
-  wmDocs = import ../../../docs { inherit pkgs; inherit (cfg.documentation) extraModules; };
+  wmDocs = import ../../../docs {
+    inherit pkgs;
+    inherit (cfg.documentation) extraModules;
+  };
 in
 {
   imports = [ ../common.nix ];
@@ -37,7 +40,7 @@ in
         let
           validPackages = lib.filterAttrs (_: wrapper: wrapper.enableInstall) cfg.packages;
         in
-          lib.mapAttrsToList (_: wrapper: wrapper.build.toplevel) validPackages;
+        lib.mapAttrsToList (_: wrapper: wrapper.build.toplevel) validPackages;
     })
   ];
 }

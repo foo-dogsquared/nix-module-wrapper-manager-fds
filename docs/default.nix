@@ -30,9 +30,8 @@ let
           class = "wrapperManager";
         }).options;
 
-    # Based from nixpkgs' and home-manager's code.
-    gitHubDeclaration = user: repo: subpath:
-      {
+      # Based from nixpkgs' and home-manager's code.
+      gitHubDeclaration = user: repo: subpath: {
         url = "https://github.com/${user}/${repo}/blob/master/${subpath}";
         name = "<${repo}/${subpath}>";
       };
@@ -42,16 +41,21 @@ let
       {
         options =
           if includeModuleSystemOptions then options else builtins.removeAttrs options [ "_module" ];
-        transformOptions = opt:
-          opt // {
-            declarations = map (decl:
+        transformOptions =
+          opt:
+          opt
+          // {
+            declarations = map (
+              decl:
               if lib.hasPrefix src (toString decl) then
-                gitHubDeclaration "foo-dogsquared" "nix-module-wrapper-manager-fds"
-                (lib.removePrefix "/" (lib.removePrefix src (toString decl)))
+                gitHubDeclaration "foo-dogsquared" "nix-module-wrapper-manager-fds" (
+                  lib.removePrefix "/" (lib.removePrefix src (toString decl))
+                )
               else if decl == "lib/modules.nix" then
                 gitHubDeclaration "NixOS" "nixpkgs" decl
               else
-                decl) opt.declarations;
+                decl
+            ) opt.declarations;
           };
       }
       // builtins.removeAttrs args [
@@ -106,7 +110,9 @@ in
         ];
       };
     in
-    { baseUrl ? "https://foo-dogsquared.github.io/nix-module-wrapper-manager-fds" }:
+    {
+      baseUrl ? "https://foo-dogsquared.github.io/nix-module-wrapper-manager-fds",
+    }:
 
     buildHugoSite {
       pname = "wrapper-manager-docs";
@@ -126,7 +132,10 @@ in
 
       vendorHash = "sha256-UDDCYQB/kdYT63vRlRzL6lOePl9F7j3eUIHX/m6rwEs=";
 
-      buildFlags = [ "--baseURL" baseUrl ];
+      buildFlags = [
+        "--baseURL"
+        baseUrl
+      ];
 
       nativeBuildInputs = [
         asciidoctorWrapped

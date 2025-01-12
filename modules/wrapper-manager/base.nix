@@ -8,9 +8,20 @@
 let
   envConfig = config;
 
-  toStringType = (with lib.types; coercedTo (oneOf [str path int float bool]) (x: "${x}") str) // {
-    description = "string and select types (numbers, boolean, and path) convertible to it";
-  };
+  toStringType =
+    (
+      with lib.types;
+      coercedTo (oneOf [
+        str
+        path
+        int
+        float
+        bool
+      ]) (x: "${x}") str
+    )
+    // {
+      description = "string and select types (numbers, boolean, and path) convertible to it";
+    };
   envSubmodule =
     {
       config,
@@ -174,7 +185,12 @@ let
               n: v:
               if v.action == "unset" then
                 "--${v.action} ${lib.escapeShellArg n}"
-              else if lib.elem v.action [ "prefix" "suffix" ] then
+              else if
+                lib.elem v.action [
+                  "prefix"
+                  "suffix"
+                ]
+              then
                 "--${v.action} ${lib.escapeShellArg n} ${lib.escapeShellArg v.separator} ${lib.escapeShellArg (lib.concatStringsSep v.separator v.value)}"
               else
                 "--${v.action} ${lib.escapeShellArg n} ${lib.escapeShellArg v.value}"

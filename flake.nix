@@ -61,9 +61,9 @@
           website = docs.website { };
         };
 
-        checks =
-          { inherit (tests) lib; }
-          // lib.mapAttrs' (n: v: lib.nameValuePair "config-test-${n}" v) tests.configs;
+        checks = {
+          inherit (tests) lib;
+        } // lib.mapAttrs' (n: v: lib.nameValuePair "config-test-${n}" v) tests.configs;
       }
     ));
 }

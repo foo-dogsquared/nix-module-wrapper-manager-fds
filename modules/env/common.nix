@@ -23,7 +23,8 @@ let
       )
 
       (
-        { lib, ... }: {
+        { lib, ... }:
+        {
           options.enableInstall = lib.mkOption {
             type = lib.types.bool;
             default = cfg.enableInstall;

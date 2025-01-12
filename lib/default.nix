@@ -25,7 +25,12 @@ pkgs.lib.makeExtensible (
     modules = callLibs ./modules.nix;
 
     inherit (self.env) build eval;
-    inherit (self.utils) getBin getLibexec getXdgDataDirs getXdgConfigDirs;
+    inherit (self.utils)
+      getBin
+      getLibexec
+      getXdgDataDirs
+      getXdgConfigDirs
+      ;
     inherit (self.modules) makeWraparound;
   }
 )

@@ -8,7 +8,10 @@
 {
   options.build = {
     variant = lib.mkOption {
-      type = lib.types.enum [ "binary" "shell" ];
+      type = lib.types.enum [
+        "binary"
+        "shell"
+      ];
       description = ''
         Indicates the type of wrapper to be made. By default, wrapper-manager
         sets this to `binary`.
@@ -48,9 +51,12 @@
         let
           inherit (config.build) variant;
           makeWrapperArg0 =
-              if variant == "binary" then "makeBinaryWrapper"
-              else if variant == "shell" then "makeShellWrapper"
-              else "makeWrapper";
+            if variant == "binary" then
+              "makeBinaryWrapper"
+            else if variant == "shell" then
+              "makeShellWrapper"
+            else
+              "makeWrapper";
 
           mkWrapBuild =
             wrappers:
@@ -62,28 +68,35 @@
 
           desktopEntries = mkDesktopEntries (lib.attrValues config.xdg.desktopEntries);
         in
-          if lib.isList config.basePackages then
-            pkgs.symlinkJoin {
-              passthru = config.build.extraPassthru;
-              name = "wrapper-manager-fds-wrapped-package";
-              paths = desktopEntries ++ config.basePackages;
-              nativeBuildInputs =
-                if variant == "binary" then [ pkgs.makeBinaryWrapper ]
-                else if variant == "shell" then [ pkgs.makeShellWrapper ]
-                else [ ];
-              postBuild = ''
-                ${config.build.extraSetup}
-                ${mkWrapBuild (lib.attrValues config.wrappers)}
-              '';
-            }
-          else
-            config.basePackages.overrideAttrs (final: prev: {
+        if lib.isList config.basePackages then
+          pkgs.symlinkJoin {
+            passthru = config.build.extraPassthru;
+            name = "wrapper-manager-fds-wrapped-package";
+            paths = desktopEntries ++ config.basePackages;
+            nativeBuildInputs =
+              if variant == "binary" then
+                [ pkgs.makeBinaryWrapper ]
+              else if variant == "shell" then
+                [ pkgs.makeShellWrapper ]
+              else
+                [ ];
+            postBuild = ''
+              ${config.build.extraSetup}
+              ${mkWrapBuild (lib.attrValues config.wrappers)}
+            '';
+          }
+        else
+          config.basePackages.overrideAttrs (
+            final: prev: {
               nativeBuildInputs =
                 (prev.nativeBuildInputs or [ ])
                 ++ (
-                  if variant == "binary" then [ pkgs.makeBinaryWrapper ]
-                  else if variant == "shell" then [ pkgs.makeShellWrapper ]
-                  else [ ]
+                  if variant == "binary" then
+                    [ pkgs.makeBinaryWrapper ]
+                  else if variant == "shell" then
+                    [ pkgs.makeShellWrapper ]
+                  else
+                    [ ]
                 )
                 ++ lib.optionals (config.xdg.desktopEntries != { }) [ pkgs.copyDesktopItems ];
               desktopItems = (prev.desktopItems or [ ]) ++ desktopEntries;
@@ -91,10 +104,14 @@
                 ${prev.postFixup or ""}
                 ${mkWrapBuild (lib.attrValues config.wrappers)}
               '';
-              passthru = lib.recursiveUpdate (prev.passthru or { }) (config.build.extraPassthru // {
-                unwrapped = config.basePackages;
-              });
-            });
+              passthru = lib.recursiveUpdate (prev.passthru or { }) (
+                config.build.extraPassthru
+                // {
+                  unwrapped = config.basePackages;
+                }
+              );
+            }
+          );
     };
   };
 }

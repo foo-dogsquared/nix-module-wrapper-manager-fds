@@ -22,19 +22,23 @@
   );
 
   wrappers.xdg-config-dirs-script = {
-    arg0 = let
-      app = pkgs.writeShellScript "xdg-dirs-script" ''
-        echo "$XDG_CONFIG_DIRS" | tr ':' '\n'
-      '';
-    in builtins.toString app;
+    arg0 =
+      let
+        app = pkgs.writeShellScript "xdg-dirs-script" ''
+          echo "$XDG_CONFIG_DIRS" | tr ':' '\n'
+        '';
+      in
+      builtins.toString app;
   };
 
   wrappers.xdg-data-dirs-script = {
-    arg0 = let
-      app = pkgs.writeShellScript "xdg-dirs-script" ''
-        echo "$XDG_DATA_DIRS" | tr ':' '\n'
-      '';
-    in builtins.toString app;
+    arg0 =
+      let
+        app = pkgs.writeShellScript "xdg-dirs-script" ''
+          echo "$XDG_DATA_DIRS" | tr ':' '\n'
+        '';
+      in
+      builtins.toString app;
   };
 
   build.extraPassthru.wrapperManagerTests = {
