@@ -16,6 +16,7 @@ pkgs.mkShell {
     npins
     treefmt
     nixfmt-rfc-style
+    nixdoc
 
     # For easy validation of the test suite.
     yajsv

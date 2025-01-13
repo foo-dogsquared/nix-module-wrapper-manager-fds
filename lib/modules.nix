@@ -11,10 +11,55 @@
 }:
 
 rec {
-  /*
+  /**
     Make a wrapper-manager wrapper config containing a sub-wrapper that wraps
     another program. Several examples of this includes sudo, Bubblewrap, and
     Gamescope.
+
+    # Arguments
+
+    Its arguments is a sole attribute set with the following expected
+    attributes:
+
+    arg0
+    : Similar to `wrappers.<name>.arg0` from wrapper-manager module, it is a
+    store path containing an executable used as the main program of the wrapper.
+
+    under
+    : Similar to `arg0` but for the wraparound (e.g., sudo, doas, Bubblewrap).
+
+    underFlags
+    : Arguments of the wraparound. Defaults to an empty list.
+
+    underSeparator
+    : An optional string acting as the separator between the wraparound's
+    arguments and the arg0's arguments.
+
+    Note that the argument attrset can contain any attribute. The attrset is
+    then separated as a module and an additional module using the above
+    attributes.
+
+    # Type
+
+    ```
+    makeWraparound :: Attr -> Module
+    ```
+
+    # Example
+
+    ```
+    makeWraparound {
+      arg0 = lib.getExe' pkgs.hello "hello";
+      appendArgs = [ "--traditional" ];
+      under = lib.getExe' pkgs.sudo "sudo";
+      underFlags = [ "-u" "admin" ];
+    }
+    =>
+    {
+      _type = "merge";
+      contents = [ ... ];
+    }
+    ```
   */
   makeWraparound =
     {
