@@ -134,6 +134,8 @@ let
 in
 wrapperManagerLib.env.build { }
 ----
++
+To know more about the library set, you can see its function at link:wrapper-manager-lib/[the respective documentation page].
 
 * `overlays` is a set of nixpkgs overlays to be applied by the user.
 So far, there's only one overlay called `default` containing the wrapper-manager library set.

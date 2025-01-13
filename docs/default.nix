@@ -72,6 +72,29 @@ let
   };
   wmNixosDoc = evalDoc { modules = [ ../modules/env/nixos ]; };
   wmHmDoc = evalDoc { modules = [ ../modules/env/home-manager ]; };
+  wmLibNixdocs =
+    pkgs.runCommand "wrapper-manager-lib-nixdoc"
+      {
+        buildInputs = with pkgs; [ nixdoc ];
+      }
+      ''
+        mkdir -p $out
+        for nixfile in ${../lib}/*.nix; do
+          name=$(basename --suffix=".nix" "$nixfile")
+          [ "$name" = "default" ] && continue
+
+          filename="''${out}/''${name}.md"
+          title="wrapperManagerLib.''${name}"
+
+          cat > "$filename" << EOF
+        ---
+        title: "$title"
+        ---
+        EOF
+
+          nixdoc --file "$nixfile" --description "$title" --category "$name" --prefix "wrapperManagerLib" >> "$filename"
+        done
+      '';
 
   gems = pkgs.bundlerEnv {
     name = "wrapper-manager-fds-gem-env";
@@ -80,13 +103,6 @@ let
   };
 in
 {
-  # I forgot about the fact Hugo also uses Go modules for its Hugo modules
-  # feature. For now, this is considered broken up until that is working and I
-  # know squat about Go build system. Also, Hugo has several features such as
-  # embedding metadata from VCS which doesn't play well with Nix that is
-  # requiring a clean source.
-  #
-  # For now, we're just relying on nix-shell to build it for us.
   website =
     let
       buildHugoSite = pkgs.callPackage ./hugo-build-module.nix { };
@@ -147,6 +163,23 @@ in
         install -Dm0644 ${wmOptionsDoc.optionsAsciiDoc} ./content/en/wrapper-manager-env-options.adoc
         install -Dm0644 ${wmNixosDoc.optionsAsciiDoc} ./content/en/wrapper-manager-nixos-module.adoc
         install -Dm0644 ${wmHmDoc.optionsAsciiDoc} ./content/en/wrapper-manager-home-manager-module.adoc
+
+        wmLibDir="./content/en/wrapper-manager-lib"
+        mkdir -p "$wmLibDir" && install -Dm0644 ${wmLibNixdocs}/*.md -t "$wmLibDir"
+
+        cat > "$wmLibDir/_index.md" <<EOF
+        ---
+        title: "wrapper-manager library"
+        ---
+
+        # wrapper-manager library set
+
+        EOF
+
+        for i in ${wmLibNixdocs}/*.md; do
+          filename="$(basename "$i")"
+          echo "- [''${filename}](./''${i})" >> "$wmLibDir/_index.md"
+        done
       '';
 
       meta = with lib; {
@@ -160,7 +193,7 @@ in
       };
     };
 
-  inherit wmOptionsDoc wmHmDoc wmNixosDoc;
+  inherit wmOptionsDoc wmHmDoc wmNixosDoc wmLibNixdocs;
 
   inherit releaseConfig;
   outputs = {

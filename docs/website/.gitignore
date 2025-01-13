@@ -1,5 +1,6 @@
 # All of the generated assets.
 /content/**/wrapper-manager-*.adoc
+/content/**/wrapper-manager-lib/*.md
 
 ### Hugo ###
 # Generated files by hugo

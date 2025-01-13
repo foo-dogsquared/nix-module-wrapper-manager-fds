@@ -11,6 +11,12 @@ url = "wrapper-manager-env-options/"
 weight = 2
 
 [[main]]
+identifier = "wrapper-amanager-lib"
+name = "Library set"
+url = "wrapper-manager-lib/"
+weight = 3
+
+[[main]]
 identifier = "source-code"
 name = "Source code"
 url = "https://github.com/foo-dogsquared/wrapper-manager-fds"
