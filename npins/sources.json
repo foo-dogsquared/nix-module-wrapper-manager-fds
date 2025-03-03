@@ -20,9 +20,9 @@
         "repo": "home-manager"
       },
       "branch": "master",
-      "revision": "a8159195bfaef3c64df75d3b1e6a68d49d392be9",
-      "url": "https://github.com/nix-community/home-manager/archive/a8159195bfaef3c64df75d3b1e6a68d49d392be9.tar.gz",
-      "hash": "1v1wfnj3fbk7s8y6v6agm9yfyn2h62h9dvl5z4cr3lw9vccrrkrw"
+      "revision": "b71edac7a3167026aabea82a54d08b1794088c21",
+      "url": "https://github.com/nix-community/home-manager/archive/b71edac7a3167026aabea82a54d08b1794088c21.tar.gz",
+      "hash": "0cl54fsw4vlbr95x8i1c4gh8lqj9pr3iysjn7yi23x7x6lmn9n5g"
     },
     "nixos-stable": {
       "type": "Git",
@@ -44,9 +44,9 @@
         "repo": "nixpkgs"
       },
       "branch": "nixos-unstable",
-      "revision": "9d3ae807ebd2981d593cddd0080856873139aa40",
-      "url": "https://github.com/NixOS/nixpkgs/archive/9d3ae807ebd2981d593cddd0080856873139aa40.tar.gz",
-      "hash": "0bjqgsprq9fgl5yh58dk59xmchi4dajq3sf5i447q02dbiasjsil"
+      "revision": "5135c59491985879812717f4c9fea69604e7f26f",
+      "url": "https://github.com/NixOS/nixpkgs/archive/5135c59491985879812717f4c9fea69604e7f26f.tar.gz",
+      "hash": "09qy7zv80bkd9ighsw0bdxjq70dw3qjnyvg7il1fycrsgs5x1gan"
     },
     "website": {
       "type": "Git",
@@ -56,9 +56,9 @@
         "repo": "website"
       },
       "branch": "master",
-      "revision": "516132a23ed491e8ddf4146d341a7c5e59811457",
-      "url": "https://github.com/foo-dogsquared/website/archive/516132a23ed491e8ddf4146d341a7c5e59811457.tar.gz",
-      "hash": "1jx7kn3l8nq4xmpl7k0p85ml8a7d68x1wdc2xlm730h9cg3ys0mm"
+      "revision": "0df8f3909cdfc432ed7e89e346c89cea56371143",
+      "url": "https://github.com/foo-dogsquared/website/archive/0df8f3909cdfc432ed7e89e346c89cea56371143.tar.gz",
+      "hash": "0ml814774xibjs1r5p3qajgvlwqpwypbm3vawhrk4s7mw1rs8h4z"
     }
   },
   "version": 3
