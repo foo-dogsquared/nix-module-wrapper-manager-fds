@@ -19,7 +19,7 @@ weight = 3
 [[main]]
 identifier = "source-code"
 name = "Source code"
-url = "https://github.com/foo-dogsquared/wrapper-manager-fds"
+url = "https://github.com/foo-dogsquared/nix-module-wrapper-manager-fds"
 
 [[main]]
 identifier = "wrapper-manager-nixos"
