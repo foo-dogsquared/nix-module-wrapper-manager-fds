@@ -88,6 +88,7 @@ rec {
       specialArgs ? { },
     }:
     lib.evalModules {
+      class = "wrapperManager";
       specialArgs = specialArgs // {
         modulesPath = builtins.toString ../modules/wrapper-manager;
       };
@@ -103,6 +104,16 @@ rec {
             config._module.args.pkgs = lib.mkDefault pkgs;
           }
         )
+
+        # But we're also relying on the initial nixpkgs version to have the
+        # similar implementation for these modules. It's not great but it
+        # should be fine for 95% of the time.
+        #
+        # !!! This is not viable to placed modularly since `pkgs` is also set
+        # the same way so the infamous infinite recursion is inbound if you do
+        # this.
+        "${pkgs.path}/nixos/modules/misc/assertions.nix"
+        "${pkgs.path}/nixos/modules/misc/meta.nix"
       ] ++ modules;
     };
 }
