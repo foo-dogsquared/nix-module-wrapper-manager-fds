@@ -69,7 +69,7 @@
           desktopEntries = mkDesktopEntries (lib.attrValues config.xdg.desktopEntries);
         in
         if lib.isList config.basePackages then
-          pkgs.symlinkJoin {
+          pkgs.buildEnv {
             passthru = config.build.extraPassthru;
             name = "wrapper-manager-fds-wrapped-package";
             paths = desktopEntries ++ config.basePackages;
