@@ -37,6 +37,20 @@
       default = { };
     };
 
+    extraMeta = lib.mkOption {
+      type = with lib.types; attrsOf anything;
+      description = ''
+        Additional attributes to be passed as part of `meta` in the resulting
+        derivation.
+      '';
+      default = { };
+      example = lib.literalExpression ''
+        {
+          mainProgram = config.wrappers.hello.executableName;
+        }
+      '';
+    };
+
     toplevel = lib.mkOption {
       type = lib.types.package;
       readOnly = true;
@@ -71,6 +85,7 @@
         if lib.isList config.basePackages then
           pkgs.buildEnv {
             passthru = config.build.extraPassthru;
+            meta = config.build.extraMeta;
             name = "wrapper-manager-fds-wrapped-package";
             paths = desktopEntries ++ config.basePackages;
             nativeBuildInputs =
@@ -110,6 +125,7 @@
                   unwrapped = config.basePackages;
                 }
               );
+              meta = lib.recursiveUpdate (prev.meta or { }) config.build.extraMeta;
             }
           );
     };
