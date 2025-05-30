@@ -48,4 +48,19 @@ lib.runTests {
       "${../../modules}/share"
     ];
   };
+
+  testsUtilsSplitStringOnce = {
+    expr = self.utils.splitStringOnce "/" "foodogsquared/hello/there";
+    expected = [ "foodogsquared" "hello/there" ];
+  };
+
+  testsUtilsSplitStringOnce2 = {
+    expr = self.utils.splitStringOnce "/" "foo@.service/10-hello.conf";
+    expected = [ "foo@.service" "10-hello.conf" ];
+  };
+
+  testsUtilsSplitStringOnce3 = {
+    expr = self.utils.splitStringOnce ":" "there/is/no/colon/here";
+    expected = [ "there/is/no/colon/here" ];
+  };
 }

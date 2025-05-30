@@ -30,6 +30,7 @@ pkgs.lib.makeExtensible (
       getLibexec
       getXdgDataDirs
       getXdgConfigDirs
+      splitStringOnce
       ;
     inherit (self.modules) makeWraparound;
   }
