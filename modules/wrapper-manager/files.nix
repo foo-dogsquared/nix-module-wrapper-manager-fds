@@ -100,7 +100,7 @@ in
           let
             source = lib.escapeShellArg v.source;
             target = lib.escapeShellArg v.target;
-            target' = "$out/${target}";
+            target' = lib.strings.normalizePath "$out/${target}";
             installFile =
               let
                 type = lib.filesystem.pathType v.source;
