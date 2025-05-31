@@ -1,0 +1,12 @@
+= NixOS module options
+
+Options found when wrapper-manager is included as part of NixOS module environment.
+Here's a quickstart to enabling more features for wrapper-manager.
+
+* wrapper-manager packages (e.g., `wrapper-manager.packages`) includes a special module argument `nixosConfig` allowing you to set values conditionally.
+For example, you could generate certain systemd units if under NixOS or home-manager but none if compiled as standalone package.
+
+* You can add custom modules as part of the documentation with `wrapper-manager.documentation.extraModules`.
+Pretty nifty feature but it requires you to make sure that all of the included modules are documented properly.
+
+// The additional newlines are necessary to prevent appending to closely, messing up the layout.

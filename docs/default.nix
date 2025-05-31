@@ -35,7 +35,6 @@ let
         url = "https://github.com/${user}/${repo}/blob/master/${subpath}";
         name = "<${repo}/${subpath}>";
       };
-
     in
     nixosOptionsDoc (
       {
@@ -86,12 +85,6 @@ let
           filename="''${out}/''${name}.md"
           title="wrapperManagerLib.''${name}"
 
-          cat > "$filename" << EOF
-        ---
-        title: "$title"
-        ---
-        EOF
-
           nixdoc --file "$nixfile" --description "$title" --category "$name" --prefix "wrapperManagerLib" >> "$filename"
         done
       '';
@@ -105,93 +98,76 @@ in
 {
   website =
     let
-      buildHugoSite = pkgs.callPackage ./hugo-build-module.nix { };
-
-      # Now this is some dogfooding.
-      asciidoctorWrapped = wrapperManagerLib.build {
-        inherit pkgs;
-        modules = [
-          (
-            { lib, ... }:
-            {
-              wrappers.asciidoctor = {
-                arg0 = lib.getExe' gems "asciidoctor";
-                appendArgs = [
-                  "-T"
-                  "${sources.website}/templates"
-                ];
-              };
-            }
-          )
-        ];
-      };
+      buildAntoraSite = pkgs.callPackage ./build-antora-site.nix { };
+      docsRootDir = "docs/website";
+      docsRootModule = "${docsRootDir}/modules/ROOT";
     in
-    {
-      baseUrl ? "https://foo-dogsquared.github.io/nix-module-wrapper-manager-fds",
-    }:
+      buildAntoraSite (finalAttrs: {
+        pname = "wrapper-manager-docs";
+        version = "2025-05-31";
+        modHash = "sha256-mhq2RmUQKMkXm+ATD3FOz/Y8IlS6ntBQiPQR63ZAg6I=";
+        modRoot = "${finalAttrs.src}/docs/website";
 
-    buildHugoSite {
-      pname = "wrapper-manager-docs";
-      version = "2024-11-21";
+        src = lib.cleanSourceWith {
+          src = ../.;
+          filter = name: type:
+            let
+              baseName = baseNameOf (toString name);
+            in
+            !(
+              # Filter out editor backup / swap files.
+              lib.hasSuffix "~" baseName
+              || builtins.match "^\\.sw[a-z]$" baseName != null
+              || builtins.match "^\\..*\\.sw[a-z]$" baseName != null
 
-      src = lib.fileset.toSource {
-        root = ./website;
-        fileset = lib.fileset.unions [
-          ./website/assets
-          ./website/config
-          ./website/content
-          ./website/layouts
-          ./website/go.mod
-          ./website/go.sum
-        ];
-      };
+              # Filter all of the development-related thingies.
+              || baseName == "node_modules"
+              || baseName == ".direnv"
+              || baseName == ".envrc"
+              || baseName == ".github"
+              ||
 
-      vendorHash = "sha256-UDDCYQB/kdYT63vRlRzL6lOePl9F7j3eUIHX/m6rwEs=";
+              # Filter out generates files.
+              lib.hasSuffix ".o" baseName
+              || lib.hasSuffix ".so" baseName
+              ||
+              # Filter out nix-build result symlinks
+              (type == "symlink" && lib.hasPrefix "result" baseName)
+              ||
+              # Filter out sockets and other types of files we can't have in the store.
+              (type == "unknown")
+            );
+        };
+        playbookFile = "site.yml";
 
-      buildFlags = [
-        "--baseURL"
-        baseUrl
-      ];
+        nativeBuildInputs = with pkgs; [ kramdown-asciidoc ];
 
-      nativeBuildInputs = [
-        asciidoctorWrapped
-        gems
-        gems.wrappedRuby
-      ];
+        preBuild = ''
+          cat ${wmOptionsDoc.optionsAsciiDoc} | tee -a "${docsRootModule}/pages/wm-options.adoc" >/dev/null
+          cat ${wmNixosDoc.optionsAsciiDoc} | tee -a "${docsRootModule}/pages/wm-nixos-options.adoc" >/dev/null
+          cat ${wmHmDoc.optionsAsciiDoc} | tee -a "${docsRootModule}/pages/wm-hm-options.adoc" >/dev/null
 
-      preBuild = ''
-        install -Dm0644 ${wmOptionsDoc.optionsAsciiDoc} ./content/en/wrapper-manager-env-options.adoc
-        install -Dm0644 ${wmNixosDoc.optionsAsciiDoc} ./content/en/wrapper-manager-nixos-module.adoc
-        install -Dm0644 ${wmHmDoc.optionsAsciiDoc} ./content/en/wrapper-manager-home-manager-module.adoc
+          {
+            echo '* Library set' | tee -a "${docsRootModule}/nav.adoc" >/dev/null
+            mkdir -p "${docsRootModule}/pages/wm-lib"
+            for i in ${wmLibNixdocs}/*.md; do
+              name=$(basename --suffix=".md" "$i")
+              kramdoc "$i" -o "${docsRootModule}/pages/wm-lib/$name.adoc" --attribute=page-toclevels=1 --auto-ids --lazy-ids && {
+                echo "** xref:wm-lib/$name.adoc[]" | tee -a "${docsRootModule}/nav.adoc" >/dev/null
+              }
+            done
 
-        wmLibDir="./content/en/wrapper-manager-lib"
-        mkdir -p "$wmLibDir" && install -Dm0644 ${wmLibNixdocs}/*.md -t "$wmLibDir"
+            # Make the ID attribute more explicitly defined since it is
+            # interpreted as something else.
+            sed -i -E 's|^\[#|[id=|' ${docsRootModule}/pages/wm-lib/*.adoc
+          }
+        '';
 
-        cat > "$wmLibDir/_index.md" <<EOF
-        ---
-        title: "wrapper-manager library"
-        ---
-
-        # wrapper-manager library set
-
-        EOF
-
-        for i in ${wmLibNixdocs}/*.md; do
-          filename="$(basename "$i")"
-          echo "- [''${filename}](./''${i})" >> "$wmLibDir/_index.md"
-        done
-      '';
-
-      meta = with lib; {
-        description = "wrapper-manager-fds documentation";
-        homepage = "https://github.com/foo-dogsquared/wrapper-manager-fds";
-        license = with licenses; [
-          mit
-          fdl13Only
-        ];
-        platforms = platforms.all;
-      };
-    };
+        uiBundle = pkgs.fetchurl {
+          url = "https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/HEAD/raw/build/ui-bundle.zip?job=bundle-stable";
+          hash = "sha256-BbUIhK2OFazzM0aD6Uzwr3v3PPieThkEJoHwg2goyMY=";
+        };
+      });
 
   inherit wmOptionsDoc wmHmDoc wmNixosDoc wmLibNixdocs;
 
@@ -213,7 +189,7 @@ in
           nixos-render-docs options manpage --revision ${releaseConfig.version} \
             --header ./header.5 --footer ${./manpages/footer.5} \
             ${wmOptionsDoc.optionsJSON}/share/doc/nixos/options.json \
-            $out/share/man/man5/wrapper-manager.nix.5
+            $out/share/man/man5/wrapper-manager-configuration.nix.5
         '';
 
     html =

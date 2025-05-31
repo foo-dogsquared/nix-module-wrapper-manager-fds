@@ -1,0 +1,14 @@
+name: wrapper-manager-fds
+version: ~
+start_page: project-overview.adoc
+title: wrapper-manager-fds
+asciidoc:
+  attributes:
+    env-antora: true
+    current-version: 0.1.0
+    github-repo: nix-module-wrapper-manager-fds
+    github-full: foo-dogsquared/{github-repo}
+    remote-git-repo: https://github.com/{github-full}
+    docs-site: https://foo-dogsquared.github.io/{github-repo}
+nav:
+  - modules/ROOT/nav.adoc

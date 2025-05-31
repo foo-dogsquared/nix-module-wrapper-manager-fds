@@ -1,0 +1,8 @@
+= Module options
+
+[TIP]
+====
+If you're using wrapper-manager as part of either home-manager or NixOS environment, you can enable offline documentation with xref:./wm-nixos-options.adoc#_wrapper_manager_documentation_manpage_enable[`wrapper-manager.documentation.manpage.enable`] and `man 5 wrapper-manager-configuration` away!
+====
+
+// The additional newlines are necessary to prevent appending to closely, messing up the layout.

@@ -1,0 +1,22 @@
+site:
+  title: wrapper-manager-fds
+  start_page: wrapper-manager-fds::project-overview.adoc
+  url: /nix-module-wrapper-manager-fds
+content:
+  sources:
+    - url: .
+      branches:
+        - HEAD
+        - HEAD~1
+      start_path: docs/website
+ui:
+  bundle:
+    url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/HEAD/raw/build/ui-bundle.zip?job=bundle-stable
+    snapshot: true
+  supplemental_files: ./docs/website/supplemental-ui
+output:
+  clean: true
+  dir: ./public
+runtime:
+  fetch: true
+  cache_dir: ./cache

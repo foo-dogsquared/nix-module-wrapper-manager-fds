@@ -1,15 +1,4 @@
----
-title: Project overview
----
-= nix-wrapper-manager-fds
-:toc:
-
-:current-version: 0.1.0
-:github-repo: nix-module-wrapper-manager-fds
-:github-full: foo-dogsquared/{github-repo}
-:remote-git-repo: https://github.com/{github-full}
-:docs-site: https://foo-dogsquared.github.io/{github-repo}
-
+= Project overview
 
 wrapper-manager-fds is foodogsquared's reimagining of https://github.com/viperML/wrapper-manager/[wrapper-manager].
 
