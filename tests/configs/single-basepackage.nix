@@ -23,7 +23,7 @@
       let
         wrapper = config.build.toplevel;
       in
-      pkgs.runCommand "wrapper-manager-fastfetch-actually-built" { } ''
+      pkgs.runCommand "wrapper-manager-single-basepackage-actually-built" { } ''
         [ -e "${wrapper}/share/applications/fastfetch-guix.desktop" ] && [ -x "${wrapper}/bin/${config.wrappers.fastfetch-guix.executableName}" ] && touch $out
       '';
   };

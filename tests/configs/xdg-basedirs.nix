@@ -46,7 +46,7 @@
       let
         wrapper = config.build.toplevel;
       in
-      pkgs.runCommand "wrapper-manager-xdg-desktop-entry-actually-built" { } ''
+      pkgs.runCommand "wrapper-manager-xdg-basedirs-actually-built" { } ''
         [ -x "${wrapper}/bin/xdg-data-dirs-script" ] && {
           ${lib.getExe' wrapper "xdg-data-dirs-script"} | grep "${pkgs.yt-dlp}/share" > /dev/null
         } && [ -x "${wrapper}/bin/xdg-config-dirs-script" ] && {
