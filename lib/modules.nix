@@ -83,7 +83,7 @@ rec {
         # we're just making sure that it is the case. The priority is chosen
         # arbitrarily just in case the user already has `prependArgs` values
         # with `lib.mkBefore` for the original arg0.
-        prependArgs = lib.mkOrder 250 (
+        prependArgs = mkWraparoundBefore (
           underFlags ++ lib.optionals (underSeparator != "") [ underSeparator ] ++ [ arg0 ]
         );
       }
@@ -93,4 +93,15 @@ rec {
       # normally.
       module'
     ];
+
+  /**
+    Create a order priority value assigned for wraparound arguments.
+
+    # Examples
+
+    ```nix
+    mkWraparoundBefore wraparoundArgs ++ [ "--" ] ++ [ (lib.getExe pkgs.hello) ]
+    ```
+  */
+  mkWraparoundBefore = lib.mkOrder 250;
 }
