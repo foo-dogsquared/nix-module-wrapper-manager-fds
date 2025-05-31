@@ -29,6 +29,7 @@ pkgs.lib.makeExtensible (
     # --- START-NO-EXPORT ---
     generators = callLibs ./generators.nix;
     formats = callLibs ./formats.nix;
+    systemd = callLibs ./systemd;
     # --- END-NO-EXPORT ---
 
     inherit (self.env) build eval;

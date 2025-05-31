@@ -8,5 +8,7 @@
     ./locale.nix
     ./build.nix
     ./extra-args.nix
+
+    ./programs/systemd
   ];
 }

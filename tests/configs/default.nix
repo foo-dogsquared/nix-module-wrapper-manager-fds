@@ -20,5 +20,6 @@ in
   single-basepackage = build { modules = [ ./single-basepackage.nix ]; };
   neofetch-with-additional-files = build { modules = [ ./neofetch-with-additional-files.nix ]; };
   lib-modules-make-wraparound = build { modules = [ ./lib-modules-subset/make-wraparound.nix ]; };
+  systemd-units = build { modules = [ ./systemd-units.nix ]; };
   data-format-files = build { modules = [ ./data-format-files.nix ]; };
 }
