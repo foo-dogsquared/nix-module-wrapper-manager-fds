@@ -24,6 +24,12 @@ pkgs.lib.makeExtensible (
     utils = callLibs ./utils.nix;
     modules = callLibs ./modules.nix;
 
+    # Any files after the delimiter shouldn't have any top-level attribute
+    # exports.
+    # --- START-NO-EXPORT ---
+    generators = callLibs ./generators.nix;
+    # --- END-NO-EXPORT ---
+
     inherit (self.env) build eval;
     inherit (self.utils)
       getBin
