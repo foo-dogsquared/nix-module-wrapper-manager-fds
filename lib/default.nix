@@ -28,6 +28,7 @@ pkgs.lib.makeExtensible (
     # exports.
     # --- START-NO-EXPORT ---
     generators = callLibs ./generators.nix;
+    formats = callLibs ./formats.nix;
     # --- END-NO-EXPORT ---
 
     inherit (self.env) build eval;
