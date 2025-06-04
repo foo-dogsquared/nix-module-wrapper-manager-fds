@@ -31,6 +31,10 @@ let
   };
 in
 {
+  imports = [
+    ./wrappers-integration.nix
+  ];
+
   options.programs.systemd = {
     environment = lib.mkOption {
       type =

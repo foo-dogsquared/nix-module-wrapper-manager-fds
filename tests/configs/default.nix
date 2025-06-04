@@ -21,5 +21,6 @@ in
   neofetch-with-additional-files = build { modules = [ ./neofetch-with-additional-files.nix ]; };
   lib-modules-make-wraparound = build { modules = [ ./lib-modules-subset/make-wraparound.nix ]; };
   systemd-units = build { modules = [ ./systemd-units.nix ]; };
+  wrappers-with-systemd-units = build { modules = [ ./wrappers-with-systemd-enabled.nix ]; };
   data-format-files = build { modules = [ ./data-format-files.nix ]; };
 }
