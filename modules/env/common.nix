@@ -9,7 +9,7 @@ let
   cfg = config.wrapper-manager;
 
   wrapperManagerModule = lib.types.submoduleWith {
-    description = "wrapper-manager module";
+    description = "wrapper-manager configuration";
     class = "wrapperManager";
     specialArgs = cfg.extraSpecialArgs;
     modules = [
