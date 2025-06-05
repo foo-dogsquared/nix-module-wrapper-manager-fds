@@ -1,6 +1,11 @@
 # The typical output name for Nix builds.
 result*
 
+# Antora output and cache directory.
+node_modules/
+public/
+cache/
+
 ### direnv ###
 .direnv
 .envrc

@@ -4,7 +4,7 @@ docs-serve:
 
 .PHONY: docs-build
 docs-build:
-	hugo -s docs/website
+	antora generate site.yml
 
 .PHONY: build
 build:
