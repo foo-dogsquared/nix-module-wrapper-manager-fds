@@ -78,9 +78,13 @@ let
       }
       ''
         mkdir -p $out
-        for nixfile in ${../lib}/*.nix; do
-          name=$(basename --suffix=".nix" "$nixfile")
+        for nixfile in $(find ${../lib} -maxdepth 2 -name '*.nix'); do
+          name=$(realpath --relative-to=${../lib} "$nixfile" | sed -E -e 's|\.nix||')
           [ "$name" = "default" ] && continue
+          [ "$(basename $name)" = "default" ] && {
+            name=$(dirname $name)
+          }
+          name=$(echo $name | tr '/' '.')
 
           filename="''${out}/''${name}.md"
           title="wrapperManagerLib.''${name}"
