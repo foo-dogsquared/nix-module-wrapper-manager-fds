@@ -1,0 +1,7 @@
+= wrapper-manager library set
+:toc:
+
+A custom library set for wrapper-manager.
+It is basically a consolidated set of utilities and other goodies for various purposes such as additional string functions and systemd-related utilities for third-party module authors to extend upon the systemd module.
+
+If you're interested in spelunking here, just take note that there is a convention for private files that start with an underscore ('_').

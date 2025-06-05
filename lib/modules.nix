@@ -97,6 +97,10 @@ rec {
   /**
     Create a order priority value assigned for wraparound arguments.
 
+    # Arguments
+
+    Same as nixpkgs' `lib.mkBefore` and `lib.mkAfter`.
+
     # Examples
 
     ```nix
