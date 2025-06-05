@@ -107,7 +107,7 @@ in
               in
               if type == "directory" then
                 ''
-                  mkdir -p $(basename ${target'}) && cp --recursive ${source} ${target'}
+                  mkdir -p ${target'} && cp --recursive ${source}/* ${target'}
                 ''
               else if type == "symlink" then
                 ''

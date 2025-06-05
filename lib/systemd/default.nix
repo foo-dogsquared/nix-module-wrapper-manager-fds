@@ -44,6 +44,7 @@ rec {
   intoUnit = def: {
     inherit (def)
       name
+      enableStatelessInstallation
       filename
       settings
       wantedBy
@@ -195,6 +196,7 @@ rec {
       else
         "${unitName}.${suffix}.d/${overrideName}.conf";
 
+  # Internal implementation for creating a unit within wrapper-manager.
   makeUnit =
     name: unit:
       pkgs.runCommand "unit-${mkPathSafeName name}"
@@ -207,11 +209,32 @@ rec {
           text = unit.text;
           passAsFile = [ "text" ];
         }
-        ''
-          name=${shellEscape name}
+        (''
+          name=${shellEscape unit.filename}
           mkdir -p "$out/$(dirname -- "$name")"
           mv "$textPath" "$out/$name"
-        '';
+        ''
+        + lib.optionalString unit.enableStatelessInstallation (
+          let
+            makeSymlinkScript = suffix: _item: let
+              folderName = shellEscape "${_item}.${suffix}";
+            in ''
+              folderName=${folderName}
+              mkdir -p "$out/$folderName" && ln -sfn ../$name "$out/$folderName/$name"
+            '';
+          in
+          ''
+            ${lib.concatStrings (
+              builtins.map (alias: ''
+                ln -sfn $name "$out/${shellEscape alias}"
+              '') unit.aliases
+            )}
+
+            ${lib.concatStrings (builtins.map (makeSymlinkScript "wants") unit.wantedBy)}
+            ${lib.concatStrings (builtins.map (makeSymlinkScript "requires") unit.requiredBy)}
+            ${lib.concatStrings (builtins.map (makeSymlinkScript "upholds") unit.upheldBy)}
+          '')
+        );
 
   boolValues = [
     true
@@ -423,6 +446,25 @@ rec {
   # Quotes a list of arguments into a single string for use in a Exec*
   # line.
   escapeSystemdExecArgs = lib.concatMapStringsSep " " escapeSystemdExecArg;
+
+  /**
+    Builder function for generating a set of systemd units.
+
+    # Arguments
+
+    It's a sole attrset with the following expected attributes:
+
+    units
+    : A set of units associated with a systemd installation. Typically, this is
+    used from `programs.systemd.user.units` and `programs.systemd.system.units`
+    respectively to build the systemd installation directory.
+  */
+  generateUnits = { units ? { } }@args:
+    pkgs.buildEnv {
+      ignoreCollisions = false;
+      name = "wrapper-manager-systemd-generated-units";
+      paths = lib.mapAttrsToList (_: v: v.unit) units;
+    };
 
   options = import ./options.nix { inherit pkgs lib self; };
   submodules = import ./submodules.nix { inherit pkgs lib self; };

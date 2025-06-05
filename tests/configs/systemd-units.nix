@@ -11,6 +11,26 @@
       startAt = "weekly";
     };
 
+    there = {
+      enableStatelessInstallation = true;
+      aliases = [ "whut-whut.service" ];
+      wantedBy = [ "graphical.target" ];
+      requiredBy = [ "multi-user.target" ];
+      upheldBy = [ "default.target" "basic.target" ];
+      description = "EEEEEEEEeeeeeeehhh.....";
+    };
+
+    # A duplicate of `there.service` with the same installation configuration
+    # and everything.
+    whomp = {
+      enableStatelessInstallation = true;
+      aliases = [ "whut-whut.service" ];
+      wantedBy = [ "graphical.target" ];
+      requiredBy = [ "multi-user.target" ];
+      upheldBy = [ "default.target" "basic.target" ];
+      description = "EEEEEEEEeeeeeeehhh.....";
+    };
+
     "there/10-hello" = {
       description = "wrapper-manager systemd service override example";
       wantedBy = [ "graphical.target" "gnome-session@sample.target" ];
@@ -30,6 +50,8 @@
             "SPACE"
             "DELIMITED"
             "VALUES"
+            "IN"
+            "SPAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACE"
           ];
         };
 
@@ -122,19 +144,38 @@
     actuallyBuilt =
       let
         wrapper = config.build.toplevel;
+        systemdDir = "${wrapper}/etc/systemd";
       in
       pkgs.runCommand "wrapper-manager-systemd-units-actually-built" { } ''
-        [ -f "${wrapper}/etc/systemd/system/hello.service" ] \
-        && [ -f "${wrapper}/etc/systemd/system/hello.timer" ] \
-        && [ -f "${wrapper}/etc/systemd/system/service-with-custom-sections.service" ] \
-        && [ -f "${wrapper}/etc/systemd/system/there.service.d/10-hello.conf" ] \
-        && [ -f "${wrapper}/etc/systemd/system/there.service.d/20-hello-again.conf" ] \
-        && [ -f "${wrapper}/etc/systemd/system/hello.socket" ] \
-        && [ -f "${wrapper}/etc/systemd/user/activitywatch.target" ] \
-        && [ -f "${wrapper}/etc/systemd/user/hello.service" ] \
-        && [ -f "${wrapper}/etc/systemd/user/gnome-session-manager@.service" ] \
-        && [ -f "${wrapper}/etc/systemd/user/gnome-session-manager@one.foodogsquared.HorizontalHunger.service.d/10-gnome-session-wrapper-manager-override.conf" ] \
+        [ -f "${systemdDir}/system/hello.service" ] \
+        && [ -f "${systemdDir}/system/hello.timer" ] \
+        && [ -f "${systemdDir}/system/service-with-custom-sections.service" ] \
+        && [ -f "${systemdDir}/system/there.service.d/10-hello.conf" ] \
+        && [ -f "${systemdDir}/system/there.service.d/20-hello-again.conf" ] \
+        && [ -f "${systemdDir}/system/hello.socket" ] \
+        && [ -f "${systemdDir}/user/activitywatch.target" ] \
+        && [ -f "${systemdDir}/user/hello.service" ] \
+        && [ -f "${systemdDir}/user/gnome-session-manager@.service" ] \
+        && [ -f "${systemdDir}/user/gnome-session-manager@one.foodogsquared.HorizontalHunger.service.d/10-gnome-session-wrapper-manager-override.conf" ] \
+        && [ -d "${systemdDir}/system/graphical.target.wants" ] \
+        && [ -d "${systemdDir}/system/multi-user.target.requires" ] \
+        && [ -d "${systemdDir}/system/default.target.upholds" ] \
+        && [ -d "${systemdDir}/system/basic.target.upholds" ] \
+        && [ -L "${systemdDir}/system/basic.target.upholds/there.service" ] \
+        && [ -L "${systemdDir}/system/basic.target.upholds/whomp.service" ] \
         && touch $out
       '';
+
+    checkMetadata =
+      let
+        inherit (config.programs) systemd;
+      in
+        lib.optionalAttrs (
+          systemd.system.services."there/10-hello".name == "there.service"
+          && systemd.system.services."hello".name == "hello.service"
+          && systemd.system.services."there/20-hello-again".name == "there.service"
+          && systemd.user.services."gnome-session-manager@".name == "gnome-session-manager@.service"
+          && systemd.user.services."gnome-session-manager@one.foodogsquared.HorizontalHunger/10-gnome-session-wrapper-manager-override".name == "gnome-session-manager@one.foodogsquared.HorizontalHunger.service"
+        ) pkgs.emptyFile;
   };
 }

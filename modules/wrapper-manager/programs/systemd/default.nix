@@ -29,6 +29,12 @@ let
       ];
     };
   };
+
+  sharedUnitConfig = {
+    config = {
+      enableStatelessInstallation = lib.mkDefault cfg.enableStatelessInstallation;
+    };
+  };
 in
 {
   imports = [
@@ -63,6 +69,17 @@ in
       example = false;
     };
 
+    enableStatelessInstallation = lib.mkEnableOption null // {
+      description = ''
+        Whether to enable stateless installation of the systemd units into
+        their proper place. This involves the generated units within the
+        derivation to be placed within additional folder structure.
+
+        So far, this is only based from several install unit options (e.g.,
+        `requiredBy`, `wantedBy`, `upheldBy`, and `aliases`).
+      '';
+    };
+
     enableCommonDependencies = lib.mkEnableOption null // {
       description = ''
         Whether to install additional dependencies on the generated scripts of
@@ -94,7 +111,10 @@ in
           {manpage}`systemd.unit(5)`.
         '';
         default = { };
-        type = with lib.types; attrsOf (submodule systemdUtils.submodules.units);
+        type = with lib.types; attrsOf (submodule (
+          systemdUtils.submodules.units
+          ++ [ sharedUnitConfig ]
+        ));
       };
 
       services = mkSystemUnitDefinition "service" // {
@@ -133,14 +153,15 @@ in
         '';
         type = with lib.types; attrsOf (submodule
           (systemdUtils.submodules.services
-          ++ lib.singleton { imports = [ sharedExecConfig ]; })
+          ++ [ sharedUnitConfig sharedExecConfig ])
         );
       };
 
       timers = mkSystemUnitDefinition "timer" // {
-        type = with lib.types; attrsOf (submodule
+        type = with lib.types; attrsOf (submodule (
           systemdUtils.submodules.timers
-        );
+          ++ [ sharedUnitConfig ]
+        ));
         example = lib.literalExpression ''
           {
             hello = {
@@ -159,40 +180,45 @@ in
       };
 
       targets = mkSystemUnitDefinition "target" // {
-        type = with lib.types; attrsOf (submodule
+        type = with lib.types; attrsOf (submodule (
           systemdUtils.submodules.targets
-        );
+          ++ [ sharedUnitConfig ]
+        ));
       };
 
       sockets = mkSystemUnitDefinition "socket" // {
         type = with lib.types; attrsOf (submodule
           (systemdUtils.submodules.sockets
-          ++ lib.singleton { imports = [ sharedExecConfig ]; })
+          ++ [ sharedExecConfig sharedUnitConfig ])
         );
       };
 
       mounts = mkSystemUnitDefinition "mount" // {
-        type = with lib.types; attrsOf (submodule
+        type = with lib.types; attrsOf (submodule (
           systemdUtils.submodules.mounts
-        );
+          ++ [ sharedUnitConfig ]
+        ));
       };
 
       automounts = mkSystemUnitDefinition "automount" // {
-        type = with lib.types; attrsOf (submodule
+        type = with lib.types; attrsOf (submodule (
           systemdUtils.submodules.automounts
-        );
+          ++ [ sharedUnitConfig ]
+        ));
       };
 
       slices = mkSystemUnitDefinition "slice" // {
-        type = with lib.types; attrsOf (submodule
+        type = with lib.types; attrsOf (submodule (
           systemdUtils.submodules.slices
-        );
+          ++ [ sharedUnitConfig ]
+        ));
       };
 
       paths = mkSystemUnitDefinition "path" // {
-        type = with lib.types; attrsOf (submodule
+        type = with lib.types; attrsOf (submodule (
           systemdUtils.submodules.paths
-        );
+          ++ [ sharedUnitConfig ]
+        ));
       };
     };
 
@@ -268,13 +294,14 @@ in
     programs.systemd.system.units = collectSystemdUnits cfg.system;
     programs.systemd.user.units = collectSystemdUnits cfg.user;
 
-    files = let
-      mkSystemdUnitFile = dir: n: v:
-        lib.nameValuePair "etc/systemd/${dir}/${v.filename}" {
-          inherit (v) text;
-        };
-    in
-      lib.mapAttrs' (mkSystemdUnitFile "system") cfg.system.units
-      // lib.mapAttrs' (mkSystemdUnitFile "user") cfg.user.units;
+    files = lib.mkMerge [
+      (lib.mkIf (cfg.system.units != { }) {
+        "/etc/systemd/system".source = wrapperManagerLib.systemd.generateUnits { inherit (cfg.system) units; };
+      })
+
+      (lib.mkIf (cfg.user.units != { }) {
+        "/etc/systemd/user".source = wrapperManagerLib.systemd.generateUnits { inherit (cfg.user) units; };
+      })
+    ];
   };
 }

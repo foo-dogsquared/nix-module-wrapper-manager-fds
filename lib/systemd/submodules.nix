@@ -30,7 +30,8 @@ in
     List of modules associated for {option}`programs.systemd.$VARIANT.units`.
     This is intended to be put inside of a module option with a submodule type.
   */
-  units = { name, config, lib, ... }:
+  units = lib.singleton (
+    { name, config, lib, ... }:
     {
       options = sharedOptions // {
         text = lib.mkOption {
@@ -50,7 +51,8 @@ in
         unit = lib.mkDefault (makeUnit name config);
         text = self.generators.toSystemdINI config.settings;
       };
-    };
+    }
+  );
 
   /**
     List of modules associated for {option}`programs.systemd.$VARIANT.services`.
