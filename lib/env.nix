@@ -1,3 +1,11 @@
+/**
+  The VERY VERY root of wrapper-manager. This is the subset involving
+  wrapper-manager environments. So far, you can evaluate and build a
+  wrapper-manager configuration.
+
+  This means in theory, you could build wrapper-manager packages inside of a
+  wrapper-manager configuration. (But I don't encourage it.)
+*/
 rec {
   /**
     Given the attrset for evaluating a wrapper-manager module, return a
