@@ -3,7 +3,7 @@
 {
   description = "wrapper-manager-fds flake";
   outputs =
-    { ... }:
+    { self, ... }:
     let
       sources = import ./npins;
       systems = [
@@ -49,7 +49,7 @@
         tests = import ./tests { inherit pkgs; };
         docs = import ./docs { inherit pkgs; };
       in
-      {
+      rec {
         devShells = {
           default = import ./shell.nix { inherit pkgs; };
           website = import ./docs/website/shell.nix { inherit pkgs; };
@@ -63,7 +63,8 @@
 
         checks = {
           inherit (tests) lib;
-        } // lib.mapAttrs' (n: v: lib.nameValuePair "config-test-${n}" v) tests.configs;
+        } // lib.mapAttrs' (n: v: lib.nameValuePair "config-test-${n}" v) tests.configs
+        // devPackages;
       }
     ));
 }
