@@ -17,4 +17,5 @@ in
   env = callLib ./env;
   generators = callLib ./generators;
   utils = callLib ./utils.nix;
+  systemd = callLib ./systemd.nix;
 }
