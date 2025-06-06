@@ -8,7 +8,7 @@ let
     enable = lib.mkEnableOption "${unitTypeSingular} unit generation";
     settings = lib.mkOption {
       type = lib.types.submodule (
-        systemdUtils.submodules.${systemdUnitAttr}
+        (systemdUtils.submodules."${systemdUnitAttr}'" config)
         ++ lib.singleton {
           _module.args.name = lib.mkForce name;
         }
