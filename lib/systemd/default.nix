@@ -4,10 +4,9 @@
   a lot of the functions is centered around NixOS' need (unsurprisingly) and it
   would require a LOT of adjusting otherwise so why not just fork it directly.
 
-  Unlike NixOS' version where it has a few design considerations such as
-  dropping support for `Install` section for units because it can do
-  it stateless-ly, wrapper-manager only cares about generating them unit files.
-  Thus, we have dropped several module options such as
+  Unlike NixOS' version, wrapper-manager only cares about generating them unit
+  files so it won't have additional options such as `restartTriggers` and the
+  like. Thus, we have dropped several module options such as
   `systemd.units.<name>.enable` and `systemd.units.<name>.overrideStrategy`.
   Furthermore, we have added support for generating drop-in unit files by
   "$UNITNAME/$OVERRIDE_NAME" where it should map to
@@ -28,12 +27,17 @@
 rec {
   /**
     Convert the given non-generic unit options into the generic units version.
-    Basically, it converts `programs.systemd.system.services.hello` suitable for
-    `programs.systemd.system.units.hello` where it will be included in the derivation.
+    For example, it converts `programs.systemd.system.services.hello` suitable
+    for `programs.systemd.system.units.hello` where it will be included in the
+    derivation.
 
     For third-party module authors, it is recommended to set
-    `programs.systemd.{system,user}.units` with this function that is likely to use
-    other unit type submodules.
+    `programs.systemd.{system,user}.units` with this function.
+
+    # Arguments
+
+    It's an attrset that is expected to have shared module options with
+    `programs.systemd.system.units`.
 
     # Type
 
@@ -53,6 +57,49 @@ rec {
       aliases
       ;
   };
+
+  /**
+    Builder function for generating a set of systemd units expected to be from
+    `programs.systemd.$VARIANT.units`.
+
+    # Arguments
+
+    It's a sole attrset with the following expected attributes:
+
+    units
+    : A set of units associated with a systemd installation. Typically, this is
+    used from `programs.systemd.user.units` and `programs.systemd.system.units`
+    respectively to build the systemd installation directory.
+
+    # Type
+
+    ```
+    generateUnits :: Attr -> Derivation
+    ```
+
+    # Example
+
+    For the following example, assume it is invoked inside of a wrapper-manager
+    configuration.
+
+    ```nix
+    { config, lib, pkgs, wrapperManagerLib, ... }:
+
+    {
+      files."lib/my-custom-apps/examples/systemd".source =
+        wrapperManagerLib.systemd.generateUnits { inherit (config.programs.systemd.system) units; };
+    }
+    ```
+  */
+  generateUnits = { units ? { } }@args:
+    pkgs.buildEnv {
+      ignoreCollisions = false;
+      name = "wrapper-manager-systemd-generated-units";
+      paths = lib.mapAttrsToList (_: v: v.unit) units;
+    };
+
+  options = import ./_options.nix { inherit pkgs lib self; };
+  submodules = import ./submodules.nix { inherit pkgs lib self; };
 
   /**
     Given a Nix string, return a shell string value.
@@ -446,26 +493,4 @@ rec {
   # Quotes a list of arguments into a single string for use in a Exec*
   # line.
   escapeSystemdExecArgs = lib.concatMapStringsSep " " escapeSystemdExecArg;
-
-  /**
-    Builder function for generating a set of systemd units.
-
-    # Arguments
-
-    It's a sole attrset with the following expected attributes:
-
-    units
-    : A set of units associated with a systemd installation. Typically, this is
-    used from `programs.systemd.user.units` and `programs.systemd.system.units`
-    respectively to build the systemd installation directory.
-  */
-  generateUnits = { units ? { } }@args:
-    pkgs.buildEnv {
-      ignoreCollisions = false;
-      name = "wrapper-manager-systemd-generated-units";
-      paths = lib.mapAttrsToList (_: v: v.unit) units;
-    };
-
-  options = import ./options.nix { inherit pkgs lib self; };
-  submodules = import ./submodules.nix { inherit pkgs lib self; };
 }
