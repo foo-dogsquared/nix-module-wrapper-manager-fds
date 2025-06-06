@@ -80,7 +80,8 @@ let
         mkdir -p $out
         for nixfile in $(find ${../lib} -maxdepth 2 -name '*.nix'); do
           name=$(realpath --relative-to=${../lib} "$nixfile" | sed -E -e 's|\.nix||')
-          [ "$name" = "default" ] && continue
+          [[ "$name" = "default" || "$(basename "$nixfile")" =~ ^[_]+ ]] && continue
+
           [ "$(basename $name)" = "default" ] && {
             name=$(dirname $name)
           }
