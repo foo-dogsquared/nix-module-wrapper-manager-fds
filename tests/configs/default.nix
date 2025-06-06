@@ -23,4 +23,5 @@ in
   systemd-units = build { modules = [ ./systemd-units.nix ]; };
   wrappers-with-systemd-units = build { modules = [ ./wrappers-with-systemd-enabled.nix ]; };
   data-format-files = build { modules = [ ./data-format-files.nix ]; };
+  systemd-lib-module-test = build { modules = [ ./systemd-lib-module-test.nix ]; };
 }
