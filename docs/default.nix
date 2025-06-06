@@ -93,12 +93,6 @@ let
           nixdoc --file "$nixfile" --description "$title" --category "$name" --prefix "wrapperManagerLib" >> "$filename"
         done
       '';
-
-  gems = pkgs.bundlerEnv {
-    name = "wrapper-manager-fds-gem-env";
-    ruby = pkgs.ruby_3_1;
-    gemdir = ./.;
-  };
 in
 {
   website =
@@ -183,8 +177,7 @@ in
         {
           nativeBuildInputs = with pkgs; [
             nixos-render-docs
-            gems
-            gems.wrappedRuby
+            asciidoctor-with-extensions
           ];
         }
         ''
@@ -200,9 +193,8 @@ in
     html =
       pkgs.runCommand "wrapper-manager-reference-html"
         {
-          nativeBuildInputs = [
-            gems
-            gems.wrappedRuby
+          nativeBuildInputs = with pkgs; [
+            asciidoctor-with-extensions
           ];
         }
         ''
