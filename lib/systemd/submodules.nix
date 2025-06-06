@@ -1,3 +1,28 @@
+/**
+  A convenient set of module types for the systemd unit. Take note, all of the
+  documented items here contain a list of modules and intended to be included as
+  a submodule. You can use it like in the following code:
+
+  ```nix
+  { config, lib, wrapperManagerLib, ... }:
+
+  let
+    otherCustomModules = [ ];
+  in
+  {
+    options.custom-systemd-option.units = lib.mkOption {
+      type = with lib.types; attrsof (submodule (
+        wrapperManagerLib.systemd.submodules.units
+        ++ [ otherCustomModules ];
+      ));
+    };
+  }
+  ```
+
+  Furthermore, it doesn't set any of the global systemd options found in the
+  base module configuration (e.g., `programs.systemd.enableCommonDependencies`,
+  `programs.systemd.enableStatelessInstallation`).
+*/
 {
   pkgs,
   lib,
@@ -23,12 +48,23 @@ let
     socketOptions
     timerOptions
     ;
-in
 
-{
+  sharedExecConfig = cfg: { config, lib, ... }: {
+    config = {
+      enableStrictShellChecks = lib.mkOptionDefault cfg.programs.systemd.enableStrictShellChecks;
+      enableCommonDependencies = lib.mkOptionDefault cfg.programs.systemd.enableCommonDependencies;
+    };
+  };
+
+  sharedUnitConfig = cfg: {
+    config = {
+      enableStatelessInstallation = lib.mkOptionDefault cfg.programs.systemd.enableStatelessInstallation;
+    };
+  };
+in
+rec {
   /**
     List of modules associated for {option}`programs.systemd.$VARIANT.units`.
-    This is intended to be put inside of a module option with a submodule type.
   */
   units = lib.singleton (
     { name, config, lib, ... }:
@@ -56,7 +92,6 @@ in
 
   /**
     List of modules associated for {option}`programs.systemd.$VARIANT.services`.
-    This is intended to be put inside of a module option with a submodule type.
   */
   services = [
     commonUnitOptions
@@ -71,8 +106,41 @@ in
   ];
 
   /**
+    Convenience function around `services` to make a list of modules with the
+    global wrapper-manager systemd-related options.
+
+    # Arguments
+
+    cfg
+    : The wrapper-manager configuration.
+
+    # Type
+
+    ```
+    services' :: Attrs -> [ Module ]
+    ```
+
+    # Examples
+
+    Assume it's in a wrapper-manager module.
+
+    ```nix
+    { lib, wrapperManagerLib, config, ... }: {
+      options.custom-systemd-option.services = lib.mkOption {
+        type = with lib.types; attrsOf (submodule (wrapperManagerLib.systemd.submodules.services' config));
+      };
+    }
+    ```
+  */
+  services' = cfg:
+    services
+    ++ [
+      (sharedExecConfig cfg)
+      (sharedUnitConfig cfg)
+    ];
+
+  /**
     List of modules associated for {option}`programs.systemd.$VARIANT.targets`.
-    This is intended to be put inside of a module option with a submodule type.
   */
   targets = [
     commonUnitOptions
@@ -85,8 +153,40 @@ in
   ];
 
   /**
+    Convenience function around `targets` to make a list of modules with the
+    global wrapper-manager systemd-related options.
+
+    # Arguments
+
+    cfg
+    : The wrapper-manager configuration.
+
+    # Type
+
+    ```
+    targets' :: Attrs -> [ Module ]
+    ```
+
+    # Examples
+
+    Assume it's in a wrapper-manager module.
+
+    ```nix
+    { lib, wrapperManagerLib, config, ... }: {
+      options.custom-systemd-option.targets = lib.mkOption {
+        type = with lib.types; attrsOf (submodule (wrapperManagerLib.systemd.submodules.targets' config));
+      };
+    }
+    ```
+  */
+  targets' = cfg:
+    targets
+    ++ [
+      (sharedUnitConfig cfg)
+    ];
+
+  /**
     List of modules associated for {option}`programs.systemd.$VARIANT.sockets`.
-    This is intended to be put inside of a module option with a submodule type.
   */
   sockets = [
     commonUnitOptions
@@ -100,8 +200,41 @@ in
   ];
 
   /**
+    Convenience function around `sockets` to make a list of modules with the
+    global wrapper-manager systemd-related options.
+
+    # Arguments
+
+    cfg
+    : The wrapper-manager configuration.
+
+    # Type
+
+    ```
+    sockets' :: Attrs -> [ Module ]
+    ```
+
+    # Examples
+
+    Assume it's in a wrapper-manager module.
+
+    ```nix
+    { lib, wrapperManagerLib, config, ... }: {
+      options.custom-systemd-option.sockets = lib.mkOption {
+        type = with lib.types; attrsOf (submodule (wrapperManagerLib.systemd.submodules.sockets' config));
+      };
+    }
+    ```
+  */
+  sockets' = cfg:
+    sockets
+    ++ [
+      (sharedExecConfig cfg)
+      (sharedUnitConfig cfg)
+    ];
+
+  /**
     List of modules associated for {option}`programs.systemd.$VARIANT.timers`.
-    This is intended to be put inside of a module option with a submodule type.
   */
   timers = [
     commonUnitOptions
@@ -115,8 +248,40 @@ in
   ];
 
   /**
+    Convenience function around `timers` to make a list of modules with the
+    global wrapper-manager systemd-related options.
+
+    # Arguments
+
+    cfg
+    : The wrapper-manager configuration.
+
+    # Type
+
+    ```
+    timers' :: Attrs -> [ Module ]
+    ```
+
+    # Examples
+
+    Assume it's in a wrapper-manager module.
+
+    ```nix
+    { lib, wrapperManagerLib, config, ... }: {
+      options.custom-systemd-option.timers = lib.mkOption {
+        type = with lib.types; attrsOf (submodule (wrapperManagerLib.systemd.submodules.timers' config));
+      };
+    }
+    ```
+  */
+  timers' = cfg:
+    timers
+    ++ [
+      (sharedUnitConfig cfg)
+    ];
+
+  /**
     List of modules associated for {option}`programs.systemd.$VARIANT.paths`.
-    This is intended to be put inside of a module option with a submodule type.
   */
   paths = [
     commonUnitOptions
@@ -130,8 +295,40 @@ in
   ];
 
   /**
+    Convenience function around `paths` to make a list of modules with the
+    global wrapper-manager systemd-related options.
+
+    # Arguments
+
+    cfg
+    : The wrapper-manager configuration.
+
+    # Type
+
+    ```
+    paths' :: Attrs -> [ Module ]
+    ```
+
+    # Examples
+
+    Assume it's in a wrapper-manager module.
+
+    ```nix
+    { lib, wrapperManagerLib, config, ... }: {
+      options.custom-systemd-option.paths = lib.mkOption {
+        type = with lib.types; attrsOf (submodule (wrapperManagerLib.systemd.submodules.paths' config));
+      };
+    }
+    ```
+  */
+  paths' = cfg:
+    paths
+    ++ [
+      (sharedUnitConfig cfg)
+    ];
+
+  /**
     List of modules associated for {option}`programs.systemd.$VARIANT.slices`.
-    This is intended to be put inside of a module option with a submodule type.
   */
   slices = [
     commonUnitOptions
@@ -145,8 +342,40 @@ in
   ];
 
   /**
+    Convenience function around `slices` to make a list of modules with the
+    global wrapper-manager systemd-related options.
+
+    # Arguments
+
+    cfg
+    : The wrapper-manager configuration.
+
+    # Type
+
+    ```
+    slices' :: Attrs -> [ Module ]
+    ```
+
+    # Examples
+
+    Assume it's in a wrapper-manager module.
+
+    ```nix
+    { lib, wrapperManagerLib, config, ... }: {
+      options.custom-systemd-option.slices = lib.mkOption {
+        type = with lib.types; attrsOf (submodule (wrapperManagerLib.systemd.submodules.slices' config));
+      };
+    }
+    ```
+  */
+  slices' = cfg:
+    slices
+    ++ [
+      (sharedUnitConfig cfg)
+    ];
+
+  /**
     List of modules associated for {option}`programs.systemd.$VARIANT.mounts`.
-    This is intended to be put inside of a module option with a submodule type.
   */
   mounts = [
     commonUnitOptions
@@ -173,8 +402,40 @@ in
   ];
 
   /**
+    Convenience function around `mounts` to make a list of modules with the
+    global wrapper-manager systemd-related options.
+
+    # Arguments
+
+    cfg
+    : The wrapper-manager configuration.
+
+    # Type
+
+    ```
+    mounts' :: Attrs -> [ Module ]
+    ```
+
+    # Examples
+
+    Assume it's in a wrapper-manager module.
+
+    ```nix
+    { lib, wrapperManagerLib, config, ... }: {
+      options.custom-systemd-option.mounts = lib.mkOption {
+        type = with lib.types; attrsOf (submodule (wrapperManagerLib.systemd.submodules.mounts' config));
+      };
+    }
+    ```
+  */
+  mounts' = cfg:
+    mounts
+    ++ [
+      (sharedUnitConfig cfg)
+    ];
+
+  /**
     List of modules associated for {option}`programs.systemd.$VARIANT.automounts`.
-    This is intended to be put inside of a module option with a submodule type.
   */
   automounts = [
     commonUnitOptions
@@ -191,4 +452,37 @@ in
       };
     })
   ];
+
+  /**
+    Convenience function around `automounts` to make a list of modules with the
+    global wrapper-manager systemd-related options.
+
+    # Arguments
+
+    cfg
+    : The wrapper-manager configuration.
+
+    # Type
+
+    ```
+    automounts' :: Attrs -> [ Module ]
+    ```
+
+    # Examples
+
+    Assume it's in a wrapper-manager module.
+
+    ```nix
+    { lib, wrapperManagerLib, config, ... }: {
+      options.custom-systemd-option.automounts = lib.mkOption {
+        type = with lib.types; attrsOf (submodule (wrapperManagerLib.systemd.submodules.automounts' config));
+      };
+    }
+    ```
+  */
+  automounts' = cfg:
+    automounts
+    ++ [
+      (sharedUnitConfig cfg)
+    ];
 }
