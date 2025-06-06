@@ -429,6 +429,34 @@ rec {
           apply = v: if isList v then v else [ v ];
         };
 
+        listenOn = mkOption {
+          type = with types; listOf str;
+          default = [ ];
+          example = [
+            "0.0.0.0:993"
+            "/run/my-socket"
+          ];
+          description = ''
+            List of addresses to listen on. Each of the items will be included
+            as part of `Socket.ListenStream=` directive of the corresponding
+            socket unit. See {manpage}`systemd.socket(5)` for more details.
+          '';
+        };
+
+        watchFilesFrom = mkOption {
+          type = with types; listOf str;
+          default = [ ];
+          example = [
+          ];
+          description = ''
+            List of file globs to monitor changes to the files. Each of the
+            items will be included as part of the `Path.Modified=` directive as
+            well as automatically create those directories with
+            `Path.MakeDirectory=` set to true of the corresponding path unit.
+            See {manpage}`systemd.path(5)` for more details.
+          '';
+        };
+
         script = mkOption {
           type = types.lines;
           default = "";
@@ -703,6 +731,10 @@ rec {
     };
 
     config = lib.mkMerge [
+      {
+        settings.Socket = config.socketConfig;
+      }
+
       (lib.mkIf (config.environment != { }) {
         socketConfig.Environment = let
           env = config.environment;

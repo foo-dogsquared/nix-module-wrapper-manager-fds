@@ -262,14 +262,32 @@ in
   };
 
   config = let
-    addTimerUnitByServicesWithStartAt = services:
+    addUnitWithCondition = services: cond: f:
       let
-        validServices = lib.filterAttrs (_: v: v.startAt != [ ]) services;
+        validServices = lib.filterAttrs cond services;
       in
-        lib.mapAttrs (_: v: {
-          wantedBy = [ "timers.target" ];
-          timerConfig.OnCalendar = v.startAt;
-        }) validServices;
+        lib.mapAttrs f validServices;
+
+    addTimerUnitByServicesWithStartAt = services: addUnitWithCondition services (_: v: v.startAt != [ ])
+      (_: v: {
+        wantedBy = [ "timers.target" ];
+        timerConfig.OnCalendar = v.startAt;
+      });
+
+    addSocketUnitByServicesWithListenOn = services: addUnitWithCondition services (_: v: v.listenOn != [ ])
+      (_: v: {
+        wantedBy = [ "sockets.target" ];
+        listenStreams = v.listenOn;
+      });
+
+    addPathUnitByServicesWithWatchFilesFrom = services: addUnitWithCondition services (_: v: v.watchFilesFrom != [ ])
+      (_: v: {
+        wantedBy = [ "paths.target" ];
+        pathConfig = {
+          PathModified = v.watchFilesFrom;
+          MakeDirectory = lib.mkDefault true;
+        };
+      });
 
     collectSystemdUnits = ns:
       let
@@ -290,6 +308,12 @@ in
   in {
     programs.systemd.system.timers = addTimerUnitByServicesWithStartAt cfg.system.services;
     programs.systemd.user.timers = addTimerUnitByServicesWithStartAt cfg.user.services;
+
+    programs.systemd.system.sockets = addSocketUnitByServicesWithListenOn cfg.system.services;
+    programs.systemd.user.sockets = addSocketUnitByServicesWithListenOn cfg.user.services;
+
+    programs.systemd.system.paths = addPathUnitByServicesWithWatchFilesFrom cfg.system.services;
+    programs.systemd.user.paths = addPathUnitByServicesWithWatchFilesFrom cfg.user.services;
 
     programs.systemd.system.units = collectSystemdUnits cfg.system;
     programs.systemd.user.units = collectSystemdUnits cfg.user;

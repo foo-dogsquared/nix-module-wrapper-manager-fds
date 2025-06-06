@@ -25,6 +25,7 @@ let
 
   systemdModule = { config, lib, name, ... }: let
     submoduleCfg = config.systemd;
+    inherit (submoduleCfg) serviceUnit;
     mkSystemdOption' = mkSystemdOption name;
   in {
     options.systemd = {
@@ -51,13 +52,32 @@ let
           serviceConfig.ExecStart = config.executableName;
           wantedBy = lib.optionals (submoduleCfg.variant == "user") (lib.mkDefault [ "default.target" ]);
         };
-      })
 
-      (lib.mkIf (submoduleCfg.serviceUnit.settings.startAt != [ ]) {
-        systemd.timerUnit.enable = lib.mkDefault true;
-        systemd.timerUnit.settings = {
-          wantedBy = [ "timers.target" ];
-          timerConfig.OnCalendar = submoduleCfg.serviceUnit.settings.startAt;
+        systemd.timerUnit = lib.mkIf (serviceUnit.settings.startAt != [ ]) {
+          enable = lib.mkDefault true;
+          settings = {
+            wantedBy = [ "timers.target" ];
+            timerConfig.OnCalendar = serviceUnit.settings.startAt;
+          };
+        };
+
+        systemd.socketUnit = lib.mkIf (serviceUnit.settings.listenOn != [ ]) {
+          enable = lib.mkDefault true;
+          settings = {
+            wantedBy = [ "sockets.target" ];
+            listenStreams = serviceUnit.settings.listenOn;
+          };
+        };
+
+        systemd.pathUnit = lib.mkIf (serviceUnit.settings.watchFilesFrom != [ ]) {
+          enable = lib.mkDefault true;
+          settings = {
+            wantedBy = [ "paths.target" ];
+            pathConfig = {
+              PathModified = serviceUnit.settings.watchFilesFrom;
+              MakeDirectory = lib.mkDefault true;
+            };
+          };
         };
       })
     ]);

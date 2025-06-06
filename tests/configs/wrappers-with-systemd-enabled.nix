@@ -23,7 +23,15 @@
     systemd.variant = "system";
     systemd.serviceUnit = {
       enable = true;
-      settings.startAt = "daily";
+      settings = {
+        startAt = "daily";
+        watchFilesFrom = [
+          "%h/.config/yt-dlp"
+        ];
+        listenOn = [
+          "0.0.0.0:993"
+        ];
+      };
     };
   };
 
@@ -38,6 +46,8 @@
         && [ -x "${wrapper}/bin/yt-dlp-audio" ] \
         && [ -f "${wrapper}/etc/systemd/system/yt-dlp-audio.service" ] \
         && [ -f "${wrapper}/etc/systemd/system/yt-dlp-audio.timer" ] \
+        && [ -f "${wrapper}/etc/systemd/system/yt-dlp-audio.path" ] \
+        && [ -f "${wrapper}/etc/systemd/system/yt-dlp-audio.socket" ] \
         && touch $out
       '';
   };
