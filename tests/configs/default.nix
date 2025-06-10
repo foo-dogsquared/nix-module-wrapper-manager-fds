@@ -24,4 +24,5 @@ in
   wrappers-with-systemd-units = build { modules = [ ./wrappers-with-systemd-enabled.nix ]; };
   data-format-files = build { modules = [ ./data-format-files.nix ]; };
   systemd-lib-module-test = build { modules = [ ./systemd-lib-module-test.nix ]; };
+  gnome-session-basic-example = build { modules = [ ./gnome-session-basic-example.nix ]; };
 }

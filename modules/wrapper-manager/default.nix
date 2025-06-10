@@ -10,5 +10,6 @@
     ./extra-args.nix
 
     ./programs/systemd
+    ./programs/gnome-session
   ];
 }
