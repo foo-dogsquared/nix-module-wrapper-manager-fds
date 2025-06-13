@@ -7,6 +7,28 @@
 
 {
   options.build = {
+    drvName = lib.mkOption {
+      type = lib.types.nonEmptyStr;
+      description = ''
+        The name of the final derivation output.
+      '';
+      default =
+        if lib.isList config.basePackages then
+          "wrapper-manager-fds-wrapped-package"
+        else
+          let
+            package = config.basePackages;
+          in
+          "${package.pname}-${package.version}-wm-wrapped";
+      defaultText = ''
+        if `config.basePackages` is a list then
+          `"wrapper-manager-fds-wrapped-package"`
+        else
+          `"''$PACKAGE_PNAME-$PACKAGE_VERSION-wm-wrapped"`
+      '';
+      example = "my-custom-package-name";
+    };
+
     variant = lib.mkOption {
       type = lib.types.enum [
         "binary"
@@ -86,7 +108,7 @@
           pkgs.buildEnv {
             passthru = config.build.extraPassthru;
             meta = config.build.extraMeta;
-            name = "wrapper-manager-fds-wrapped-package";
+            name = config.build.drvName;
             paths = desktopEntries ++ config.basePackages;
             nativeBuildInputs =
               if variant == "binary" then
@@ -103,6 +125,7 @@
         else
           config.basePackages.overrideAttrs (
             final: prev: {
+              name = config.build.drvName;
               nativeBuildInputs =
                 (prev.nativeBuildInputs or [ ])
                 ++ (

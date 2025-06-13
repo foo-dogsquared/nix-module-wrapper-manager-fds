@@ -16,9 +16,10 @@ let
       ../wrapper-manager
 
       (
-        { lib, ... }:
+        { name, lib, ... }:
         {
           config._module.args.pkgs = lib.mkDefault pkgs;
+          config.build.drvName = lib.mkDefault "wrapper-manager-${name}";
         }
       )
 
